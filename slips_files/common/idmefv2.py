@@ -72,9 +72,7 @@ class IDMEFv2:
     def print(self, *args, **kwargs):
         return self.printer.print(*args, **kwargs)
 
-    def convert_threat_level_to_idmefv2_severity(
-        self, threat_lvl: ThreatLevel
-    ) -> str:
+    def convert_threat_level_to_idmefv2_severity(self, threat_lvl: ThreatLevel) -> str:
         """
         converts slips threat level to a valid IDMEFv2 Severity value
         All threat levels have a corresponding sevirity except
@@ -86,9 +84,7 @@ class IDMEFv2:
         if threat_lvl.name == "CRITICAL":
             return IDMEFv2Severity.HIGH.value
 
-    def extract_role_type(
-        self, evidence: Evidence, role=None
-    ) -> Tuple[str, str]:
+    def extract_role_type(self, evidence: Evidence, role=None) -> Tuple[str, str]:
         """
         extracts the attacker or victim's ip/domain/url from the evidence
         and returns the ip/domain/url and its' type
@@ -118,9 +114,7 @@ class IDMEFv2:
         from the given evidence
         """
         return int(
-            evidence.description.replace(".", "")
-            .split("size:")[1]
-            .split("from")[0]
+            evidence.description.replace(".", "").split("size:")[1].split("from")[0]
         )
 
     def convert_to_idmef_alert(self, alert: Alert) -> Message:
@@ -184,12 +178,10 @@ class IDMEFv2:
         """
         try:
             now = datetime.now(utils.local_tz).isoformat("T")
-            iso_ts: str = utils.convert_format(
-                evidence.timestamp, "iso"
-            ).replace(" ", "T")
-            attacker, attacker_type = self.extract_role_type(
-                evidence, role="attacker"
+            iso_ts: str = utils.convert_format(evidence.timestamp, "iso").replace(
+                " ", "T"
             )
+            attacker, attacker_type = self.extract_role_type(evidence, role="attacker")
             severity: str = self.convert_threat_level_to_idmefv2_severity(
                 evidence.threat_level
             )
@@ -229,16 +221,12 @@ class IDMEFv2:
                 msg["Source"][0]["Note"].update({"AS": evidence.attacker.AS})
 
             if evidence.attacker.rDNS:
-                msg["Source"][0]["Note"].update(
-                    {"rDNS": evidence.attacker.rDNS}
-                )
+                msg["Source"][0]["Note"].update({"rDNS": evidence.attacker.rDNS})
             if evidence.attacker.SNI:
                 msg["Source"][0]["Note"].update({"SNI": evidence.attacker.SNI})
 
             if hasattr(evidence, "victim") and evidence.victim:
-                victim, victim_type = self.extract_role_type(
-                    evidence, role="victim"
-                )
+                victim, victim_type = self.extract_role_type(evidence, role="victim")
                 msg["Target"] = [
                     {
                         victim_type: victim,
@@ -246,9 +234,7 @@ class IDMEFv2:
                     }
                 ]
 
-                if evidence.dst_port and not self.is_icmp_code(
-                    evidence.dst_port
-                ):
+                if evidence.dst_port and not self.is_icmp_code(evidence.dst_port):
                     msg["Target"][0].update({"Port": [int(evidence.dst_port)]})
 
                 if evidence.victim.TI:
@@ -256,17 +242,12 @@ class IDMEFv2:
                 if evidence.victim.AS:
                     msg["Target"][0]["Note"].update({"AS": evidence.victim.AS})
                 if evidence.victim.rDNS:
-                    msg["Target"][0]["Note"].update(
-                        {"rDNS": evidence.victim.rDNS}
-                    )
+                    msg["Target"][0]["Note"].update({"rDNS": evidence.victim.rDNS})
                 if evidence.victim.SNI:
-                    msg["Target"][0]["Note"].update(
-                        {"SNI": evidence.victim.SNI}
-                    )
+                    msg["Target"][0]["Note"].update({"SNI": evidence.victim.SNI})
 
             if (
-                evidence.evidence_type
-                == EvidenceType.MALICIOUS_DOWNLOADED_FILE
+                evidence.evidence_type == EvidenceType.MALICIOUS_DOWNLOADED_FILE
                 and evidence.attacker.ioc_type == IoCType.MD5
             ):
                 msg["Attachment"] = [
@@ -277,11 +258,7 @@ class IDMEFv2:
                 ]
                 if "size" in evidence.description:
                     msg["Attachment"][0].update(
-                        {
-                            "Size": self.extract_file_size_from_evidence(
-                                evidence
-                            )
-                        }
+                        {"Size": self.extract_file_size_from_evidence(evidence)}
                     )
 
             if evidence.rel_id:
@@ -296,15 +273,13 @@ class IDMEFv2:
 
             if "Target" in msg:
                 if msg["Target"][0]["Note"]:
-                    msg["Target"][0]["Note"] = json.dumps(
-                        msg["Target"][0]["Note"]
-                    )
+                    msg["Target"][0]["Note"] = json.dumps(msg["Target"][0]["Note"])
                 else:
                     # remove the note field since its empty
                     del msg["Target"][0]["Note"]
 
-            # PS: The "Note" field is added by the evidencehandler before
-            # logging the evidence to alerts.json
+            # PS: Attachments containing flow information are added by the
+            # evidence handler before logging the evidence to alerts.json
             msg.validate()
             return msg
 
