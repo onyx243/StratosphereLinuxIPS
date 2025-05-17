@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 import pytest
 import os
+import json
 from unittest.mock import Mock, patch, call
 
 from slips_files.core.structures.alerts import Alert
@@ -156,7 +157,7 @@ def test_clean_file(output_dir, file_to_clean, file_exists):
         mock_exists.assert_called_once_with(expected_path)
         mock_open.assert_called_with(expected_path, "a")
 
-        assert result == mock_file
+    assert result == mock_file
 
 
 @pytest.mark.parametrize(
@@ -504,3 +505,59 @@ def test_log_alert(
     evidence_handler.add_alert_to_json_log_file.assert_called_once()
     assert flow_datetime in evidence_handler.add_to_log_file.call_args[0][0]
     assert str(twid) in evidence_handler.add_to_log_file.call_args[0][0]
+
+
+def create_alert(ip: str, tw_number: int):
+    return Alert(
+        profile=ProfileID(ip),
+        timewindow=TimeWindow(tw_number),
+        last_evidence=Mock(),
+        accumulated_threat_level=10,
+        last_flow_datetime="2024/01/01 10:00:00+0000",
+    )
+
+
+def test_unblock_profile_without_additional_alerts():
+    handler = ModuleFactory().create_evidence_handler_obj()
+    handler.decide_blocking = Mock(return_value=True)
+    handler.db.publish = Mock()
+    handler.db.mark_profile_and_timewindow_as_blocked = Mock()
+
+    alert = create_alert("192.168.1.5", 1)
+    handler.handle_new_alert(alert, {"e1": Mock(spec=Evidence)})
+
+    assert handler.blocked_profiles["profile_192.168.1.5"] == 2
+
+    handler.handle_tw_closed({"data": "profile_192.168.1.5_timewindow2"})
+
+    handler.db.publish.assert_any_call(
+        "new_blocking", json.dumps({"ip": "192.168.1.5", "block": False})
+    )
+    assert "profile_192.168.1.5" not in handler.blocked_profiles
+
+
+def test_extend_block_on_additional_alert():
+    handler = ModuleFactory().create_evidence_handler_obj()
+    handler.decide_blocking = Mock(return_value=True)
+    handler.db.publish = Mock()
+    handler.db.mark_profile_and_timewindow_as_blocked = Mock()
+
+    alert1 = create_alert("192.168.1.6", 1)
+    handler.handle_new_alert(alert1, {"e1": Mock(spec=Evidence)})
+
+    alert2 = create_alert("192.168.1.6", 2)
+    handler.handle_new_alert(alert2, {"e2": Mock(spec=Evidence)})
+
+    assert handler.blocked_profiles["profile_192.168.1.6"] == 3
+
+    handler.handle_tw_closed({"data": "profile_192.168.1.6_timewindow2"})
+    # Should not unblock yet
+    unblock_call = call(
+        "new_blocking", json.dumps({"ip": "192.168.1.6", "block": False})
+    )
+    assert unblock_call not in handler.db.publish.call_args_list
+
+    handler.handle_tw_closed({"data": "profile_192.168.1.6_timewindow3"})
+
+    assert unblock_call in handler.db.publish.call_args_list
+    assert "profile_192.168.1.6" not in handler.blocked_profiles
