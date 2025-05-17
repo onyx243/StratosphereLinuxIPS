@@ -166,18 +166,27 @@ class EvidenceHandler(ICore):
             return
 
         try:
+            flows_data = json.dumps(
+                {
+                    "uids": evidence.uid,
+                    "accumulated_threat_level": accumulated_threat_level,
+                    "threat_level": str(evidence.threat_level),
+                    "timewindow": evidence.timewindow.number,
+                }
+            )
+
             idmef_evidence.update(
                 {
-                    "Note": json.dumps(
+                    "Vector": [
                         {
-                            # this is all the uids of the flows that cause
-                            # this evidence
-                            "uids": evidence.uid,
-                            "accumulated_threat_level": accumulated_threat_level,
-                            "threat_level": str(evidence.threat_level),
-                            "timewindow": evidence.timewindow.number,
+                            "Attachment": [
+                                {
+                                    "Name": "flows",
+                                    "Data": flows_data,
+                                }
+                            ]
                         }
-                    )
+                    ]
                 }
             )
             json.dump(idmef_evidence, self.jsonfile)
@@ -266,14 +275,12 @@ class EvidenceHandler(ICore):
         filters and returns all the evidence for this profile in this TW
         returns the dict with filtered evidence
         """
-        tw_evidence: Dict[str, dict] = self.db.get_twid_evidence(
-            profileid, twid
-        )
+        tw_evidence: Dict[str, dict] = self.db.get_twid_evidence(profileid, twid)
         if not tw_evidence:
             return
 
-        past_evidence_ids: List[str] = (
-            self.get_evidence_that_were_part_of_a_past_alert(profileid, twid)
+        past_evidence_ids: List[str] = self.get_evidence_that_were_part_of_a_past_alert(
+            profileid, twid
         )
 
         filtered_evidence = {}
@@ -303,9 +310,7 @@ class EvidenceHandler(ICore):
 
         return filtered_evidence
 
-    def is_filtered_evidence(
-        self, evidence: Evidence, past_evidence_ids: List[str]
-    ):
+    def is_filtered_evidence(self, evidence: Evidence, past_evidence_ids: List[str]):
         """
         filters the following
         * evidence that were part of a past alert in this same profileid
@@ -342,9 +347,7 @@ class EvidenceHandler(ICore):
 
         # Compute the moving average of evidence
         evidence_threat_level: float = threat_level * confidence
-        self.print(
-            f"\t\tWeighted Threat Level: " f"{evidence_threat_level}", 3, 0
-        )
+        self.print(f"\t\tWeighted Threat Level: " f"{evidence_threat_level}", 3, 0)
         return evidence_threat_level
 
     def send_to_exporting_module(self, tw_evidence: Dict[str, Evidence]):
@@ -368,9 +371,7 @@ class EvidenceHandler(ICore):
         """
         custom_flows = "-im" in sys.argv or "--input-module" in sys.argv
         blocking_module_enabled = "-p" in sys.argv
-        return (
-            self.is_running_non_stop or custom_flows
-        ) and blocking_module_enabled
+        return (self.is_running_non_stop or custom_flows) and blocking_module_enabled
 
     def handle_new_alert(
         self, alert: Alert, evidence_causing_the_alert: Dict[str, Evidence]
@@ -509,15 +510,11 @@ class EvidenceHandler(ICore):
 
                 # convert time to local timezone
                 if self.is_running_non_stop:
-                    timestamp: datetime = utils.convert_to_local_timezone(
-                        timestamp
-                    )
+                    timestamp: datetime = utils.convert_to_local_timezone(timestamp)
                 flow_datetime = utils.convert_format(timestamp, "iso")
 
                 evidence: Evidence = (
-                    self.formatter.add_threat_level_to_evidence_description(
-                        evidence
-                    )
+                    self.formatter.add_threat_level_to_evidence_description(evidence)
                 )
 
                 evidence_to_log: str = self.formatter.get_evidence_to_log(
@@ -532,9 +529,7 @@ class EvidenceHandler(ICore):
                 )
 
                 past_evidence_ids: List[str] = (
-                    self.get_evidence_that_were_part_of_a_past_alert(
-                        profileid, twid
-                    )
+                    self.get_evidence_that_were_part_of_a_past_alert(profileid, twid)
                 )
                 # filtered evidence dont add to the acc threat level
                 if not self.is_filtered_evidence(evidence, past_evidence_ids):
@@ -568,16 +563,13 @@ class EvidenceHandler(ICore):
                 # So find out how many attacks corresponds
                 # to the width we are using
                 if (
-                    accumulated_threat_level
-                    >= self.detection_threshold_in_this_width
+                    accumulated_threat_level >= self.detection_threshold_in_this_width
                     and not profile_already_blocked
                 ):
                     tw_evidence: Dict[str, Evidence]
                     tw_evidence = self.get_evidence_for_tw(profileid, twid)
                     if tw_evidence:
-                        tw_start, tw_end = self.db.get_tw_limits(
-                            profileid, twid
-                        )
+                        tw_start, tw_end = self.db.get_tw_limits(profileid, twid)
                         evidence.timewindow.start_time = tw_start
                         evidence.timewindow.end_time = tw_end
 
@@ -595,9 +587,7 @@ class EvidenceHandler(ICore):
                 try:
                     data = json.loads(data)
                 except json.decoder.JSONDecodeError:
-                    self.print(
-                        "Error in the report received from p2ptrust module"
-                    )
+                    self.print("Error in the report received from p2ptrust module")
                     return
                 # The available values for the following variables are
                 # defined in go_director
