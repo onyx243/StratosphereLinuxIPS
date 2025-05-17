@@ -81,9 +81,11 @@ class EvidenceHandler(ICore):
 
         self.c1 = self.db.subscribe("evidence_added")
         self.c2 = self.db.subscribe("new_blame")
+        self.c3 = self.db.subscribe("tw_closed")
         self.channels = {
             "evidence_added": self.c1,
             "new_blame": self.c2,
+            "tw_closed": self.c3,
         }
 
         # clear output/alerts.log
@@ -98,6 +100,8 @@ class EvidenceHandler(ICore):
         # this list will have our local and public ips when using -i
         self.our_ips = utils.get_own_ips()
         self.formatter = EvidenceFormatter(self.db)
+        # {profileid: tw_number_when_block_expires}
+        self.blocked_profiles: Dict[str, int] = {}
         # thats just a tmp value, this variable will be set and used when
         # the
         # module is stopping.
@@ -389,12 +393,24 @@ class EvidenceHandler(ICore):
         if self.popup_alerts:
             self.show_popup(alert)
 
-        is_blocked: bool = self.decide_blocking(alert.profile.ip)
-        if is_blocked:
-            self.db.mark_profile_and_timewindow_as_blocked(
-                str(alert.profile), str(alert.timewindow)
-            )
-        self.log_alert(alert, blocked=is_blocked)
+        profileid = str(alert.profile)
+        current_tw = alert.timewindow.number
+
+        unblock_tw = self.blocked_profiles.get(profileid)
+        should_block = unblock_tw is None or current_tw > unblock_tw
+
+        was_blocked = False
+        if should_block:
+            was_blocked = self.decide_blocking(alert.profile.ip)
+            if was_blocked:
+                self.db.mark_profile_and_timewindow_as_blocked(
+                    profileid, str(alert.timewindow)
+                )
+        # extend blocking if alert happens in the last blocked tw
+        if unblock_tw is None or current_tw >= (unblock_tw or -1):
+            self.blocked_profiles[profileid] = current_tw + 1
+
+        self.log_alert(alert, blocked=was_blocked)
 
     def decide_blocking(self, ip_to_block: str) -> bool:
         """
@@ -423,6 +439,19 @@ class EvidenceHandler(ICore):
         blocking_data = json.dumps(blocking_data)
         self.db.publish("new_blocking", blocking_data)
         return True
+
+    def handle_tw_closed(self, msg: Dict):
+        """Unblock profiles when their block period ends"""
+        profileid_tw = msg["data"].split("_")
+        profileid = f"{profileid_tw[0]}_{profileid_tw[1]}"
+        tw_number = int(profileid_tw[-1].replace("timewindow", ""))
+        unblock_tw = self.blocked_profiles.get(profileid)
+        if unblock_tw is None or tw_number != unblock_tw:
+            return
+        ip = profileid.split("_")[-1]
+        blocking_data = json.dumps({"ip": ip, "block": False})
+        self.db.publish("new_blocking", blocking_data)
+        self.blocked_profiles.pop(profileid, None)
 
     def increment_attack_counter(
         self,
@@ -629,3 +658,6 @@ class EvidenceHandler(ICore):
                 }
                 blocking_data = json.dumps(blocking_data)
                 self.db.publish("new_blocking", blocking_data)
+
+            if msg := self.get_msg("tw_closed"):
+                self.handle_tw_closed(msg)
