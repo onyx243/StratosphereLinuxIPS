@@ -324,6 +324,10 @@ class FlowMLDetection(IModule):
                     x_flow = x_flow.drop(field, axis=1)
                 except (KeyError, ValueError):
                     pass
+            # Align features to the ones used during training
+            if hasattr(self.scaler, "feature_names_in_"):
+                expected = list(self.scaler.feature_names_in_)
+                x_flow = x_flow.reindex(columns=expected, fill_value=0)
             # Scale the flow
             x_flow: numpy.ndarray = self.scaler.transform(x_flow)
             pred: numpy.ndarray = self.clf.predict(x_flow)
