@@ -762,8 +762,8 @@ class DBManager:
     def add_profile(self, *args, **kwargs):
         return self.rdb.add_profile(*args, **kwargs)
 
-    def set_module_label_for_profile(self, *args, **kwargs):
-        return self.rdb.set_module_label_for_profile(*args, **kwargs)
+    def set_module_prediction_for_profile(self, *args, **kwargs):
+        return self.rdb.set_module_prediction_for_profile(*args, **kwargs)
 
     def check_tw_to_close(self, *args, **kwargs):
         return self.rdb.check_tw_to_close(*args, **kwargs)
@@ -808,8 +808,8 @@ class DBManager:
         # uid isn't in this twid or any of the previous ones
         return {uid: None}
 
-    def get_modules_labels_of_a_profile(self, *args, **kwargs):
-        return self.rdb.get_modules_labels_of_a_profile(*args, **kwargs)
+    def get_modules_predictions_of_a_profile(self, *args, **kwargs):
+        return self.rdb.get_modules_predictions_of_a_profile(*args, **kwargs)
 
     def add_timeline_line(self, *args, **kwargs):
         return self.rdb.add_timeline_line(*args, **kwargs)
@@ -878,12 +878,19 @@ class DBManager:
         """returns the raw flow as read from the log file"""
         return self.sqlite.get_flow(*args, **kwargs)
 
-    def add_flow(self, flow, profileid: str, twid: str, label="benign"):
+    def add_flow(
+        self, flow, profileid: str, twid: str, ground_truth_config_label="benign"
+    ):
         # stores it in the db
-        self.sqlite.add_flow(flow, profileid, twid, label=label)
+        self.sqlite.add_flow(
+            flow, profileid, twid, ground_truth_config_label=ground_truth_config_label
+        )
         # handles the channels and labels etc.
         return self.rdb.add_flow(
-            flow, profileid=profileid, twid=twid, label=label
+            flow,
+            profileid=profileid,
+            twid=twid,
+            ground_truth_config_label=ground_truth_config_label,
         )
 
     def get_slips_start_time(self):

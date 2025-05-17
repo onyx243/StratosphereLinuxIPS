@@ -87,7 +87,7 @@ class FlowMLDetection(IModule):
             # Separate
             y_flow = self.flows["label"]
             X_flow = self.flows.drop("label", axis=1)
-            X_flow = X_flow.drop("module_labels", axis=1)
+            X_flow = X_flow.drop("modules_predictions", axis=1)
 
             # Normalize this batch of data so far. This can get progressivle slow
             X_flow = self.scaler.fit_transform(X_flow)
@@ -241,7 +241,7 @@ class FlowMLDetection(IModule):
                         "sbytes": 25517,
                         "appproto": "ssl",
                         "label": "Malware",
-                        "module_labels": {
+                        "modules_predictions": {
                             "flowalerts-long-connection": "Malware"
                         },
                     }
@@ -261,7 +261,7 @@ class FlowMLDetection(IModule):
                         "sbytes": 100,
                         "appproto": "http",
                         "label": "Normal",
-                        "module_labels": {
+                        "modules_predictions": {
                             "flowalerts-long-connection": "Normal"
                         },
                     }
@@ -307,7 +307,7 @@ class FlowMLDetection(IModule):
             # clean the flow
             fields_to_drop = [
                 "label",
-                "module_labels",
+                "modules_predictions",
                 "uid",
                 "history",
                 "dir_",
@@ -316,8 +316,8 @@ class FlowMLDetection(IModule):
                 "endtime",
                 "bytes",
                 "flow_source",
-                "ground_truth_label",  # todo now we can use them
-                "detailed_ground_truth_label",
+                "ground_truth_logfile_label",  # todo now we can use them
+                "ground_truth_logfile_detailed_label",
             ]
             for field in fields_to_drop:
                 try:
@@ -435,7 +435,7 @@ class FlowMLDetection(IModule):
                     "state": msg["interpreted_state"],
                     "pkts": self.flow["spkts"] + self.flow["dpkts"],
                     "label": msg["label"],
-                    "module_labels": msg["module_labels"],
+                    "modules_predictions": msg["modules_predictions"],
                 }
             )
 

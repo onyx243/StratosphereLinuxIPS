@@ -42,8 +42,8 @@ class Conn:
 
     # this is for when you give flows labeled by the netflow labeler
     # https://github.com/stratosphereips/netflowlabeler
-    ground_truth_label: str = ""
-    detailed_ground_truth_label: str = ""
+    ground_truth_logfile_label: str = ""
+    ground_truth_logfile_detailed_label: str = ""
 
     type_: str = "conn"
     dir_: str = "->"
@@ -80,8 +80,8 @@ class DNS:
 
     answers: List[str]
     TTLs: str
-    ground_truth_label: str = ""
-    detailed_ground_truth_label: str = ""
+    ground_truth_logfile_label: str = ""
+    ground_truth_logfile_detailed_label: str = ""
 
     type_: str = "dns"
 
@@ -116,8 +116,8 @@ class HTTP:
     resp_mime_types: str
     resp_fuids: str
 
-    ground_truth_label: str = ""
-    detailed_ground_truth_label: str = ""
+    ground_truth_logfile_label: str = ""
+    ground_truth_logfile_detailed_label: str = ""
 
     type_: str = "http"
 
@@ -154,8 +154,8 @@ class SSL:
     ja3s: str
     is_DoH: str
 
-    ground_truth_label: str = ""
-    detailed_ground_truth_label: str = ""
+    ground_truth_logfile_label: str = ""
+    ground_truth_logfile_detailed_label: str = ""
 
     type_: str = "ssl"
 
@@ -182,8 +182,8 @@ class SSH:
     host_key_alg: str
     host_key: str
 
-    ground_truth_label: str = ""
-    detailed_ground_truth_label: str = ""
+    ground_truth_logfile_label: str = ""
+    ground_truth_logfile_detailed_label: str = ""
 
     type_: str = "ssh"
 
@@ -199,8 +199,8 @@ class DHCP:
     smac: str  # this is the client mac
     requested_addr: str
 
-    ground_truth_label: str = ""
-    detailed_ground_truth_label: str = ""
+    ground_truth_logfile_label: str = ""
+    ground_truth_logfile_detailed_label: str = ""
 
     type_: str = "dhcp"
 
@@ -224,8 +224,8 @@ class FTP:
 
     used_port: int
 
-    ground_truth_label: str = ""
-    detailed_ground_truth_label: str = ""
+    ground_truth_logfile_label: str = ""
+    ground_truth_logfile_detailed_label: str = ""
 
     type_: str = "ftp"
 
@@ -239,8 +239,8 @@ class SMTP:
 
     last_reply: str
 
-    ground_truth_label: str = ""
-    detailed_ground_truth_label: str = ""
+    ground_truth_logfile_label: str = ""
+    ground_truth_logfile_detailed_label: str = ""
 
     type_: str = "smtp"
 
@@ -258,8 +258,8 @@ class Tunnel:
     tunnel_type: str
     action: str
 
-    ground_truth_label: str = ""
-    detailed_ground_truth_label: str = ""
+    ground_truth_logfile_label: str = ""
+    ground_truth_logfile_detailed_label: str = ""
 
     type_: str = "tunnel"
 
@@ -282,8 +282,8 @@ class Notice:
     # TODO srsly what is this?
     dst: str
 
-    ground_truth_label: str = ""
-    detailed_ground_truth_label: str = ""
+    ground_truth_logfile_label: str = ""
+    ground_truth_logfile_detailed_label: str = ""
 
     # every evidence needs a uid, notice.log flows dont have one by
     # default, slips adds one to them to be able to deal with it.
@@ -328,8 +328,8 @@ class Files:
     tx_hosts: List[str]
     rx_hosts: List[str]
 
-    ground_truth_label: str = ""
-    detailed_ground_truth_label: str = ""
+    ground_truth_logfile_label: str = ""
+    ground_truth_logfile_detailed_label: str = ""
 
     type_: str = "files"
 
@@ -376,8 +376,8 @@ class ARP:
     dpkts: str = ""
     appproto: str = ""
 
-    ground_truth_label: str = ""
-    detailed_ground_truth_label: str = ""
+    ground_truth_logfile_label: str = ""
+    ground_truth_logfile_detailed_label: str = ""
 
     type_: str = "arp"
 
@@ -396,8 +396,8 @@ class Software:
     version_minor: str
     # software log lines dont have daddr
     daddr: str = ""
-    ground_truth_label: str = ""
-    detailed_ground_truth_label: str = ""
+    ground_truth_logfile_label: str = ""
+    ground_truth_logfile_detailed_label: str = ""
 
     type_: str = "software"
 

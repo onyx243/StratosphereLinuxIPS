@@ -239,14 +239,16 @@ class SQLiteDB:
         res = res[0][1] if res else {}
         return {uid: res}
 
-    def add_flow(self, flow, profileid: str, twid: str, label="benign"):
+    def add_flow(
+        self, flow, profileid: str, twid: str, ground_truth_config_label="benign"
+    ):
         if hasattr(flow, "aid"):
             parameters = (
                 profileid,
                 twid,
                 flow.uid,
                 json.dumps(asdict(flow)),
-                label,
+                ground_truth_config_label,
                 flow.aid,
             )
             self.execute(
@@ -260,7 +262,7 @@ class SQLiteDB:
                 twid,
                 flow.uid,
                 json.dumps(asdict(flow)),
-                label,
+                ground_truth_config_label,
             )
 
             self.execute(
@@ -286,13 +288,15 @@ class SQLiteDB:
         # flows += self.get_count('altflows', condition=condition)
         return flows
 
-    def add_altflow(self, flow, profileid: str, twid: str, label="benign"):
+    def add_altflow(
+        self, flow, profileid: str, twid: str, ground_truth_config_label="benign"
+    ):
         parameters = (
             profileid,
             twid,
             flow.uid,
             json.dumps(asdict(flow)),
-            label,
+            ground_truth_config_label,
             flow.type_,
         )
         self.execute(

@@ -150,13 +150,13 @@ def test_subscribe():
     assert isinstance(db.subscribe("tw_modified"), redis.client.PubSub)
 
 
-def test_profile_moddule_labels():
-    """tests set and get_profile_module_label"""
+def test_profile_module_predictions():
+    """tests set and get_profile_module_prediction"""
     db = ModuleFactory().create_db_manager_obj(6387, flush_db=True)
     module_label = "malicious"
     module_name = "test"
-    db.set_module_label_for_profile(profileid, module_name, module_label)
-    labels = db.get_modules_labels_of_a_profile(profileid)
+    db.set_module_prediction_for_profile(profileid, module_name, module_label)
+    labels = db.get_modules_predictions_of_a_profile(profileid)
     assert "test" in labels
     assert labels["test"] == "malicious"
 

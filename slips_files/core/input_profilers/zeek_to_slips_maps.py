@@ -14,8 +14,8 @@ conn_fields_to_slips_fields_map = {
     "history": "history",
     "orig_pkts": "spkts",
     "resp_pkts": "dpkts",
-    "label": "ground_truth_label",
-    "detailedlabel": "detailed_ground_truth_label",
+    "label": "ground_truth_logfile_label",
+    "detailedlabel": "ground_truth_logfile_detailed_label",
 }
 
 dns_fields_to_slips_fields_map = {
@@ -32,8 +32,8 @@ dns_fields_to_slips_fields_map = {
     "rcode_name": "rcode_name",
     "answers": "answers",
     "TTLs": "TTLs",
-    "label": "ground_truth_label",
-    "detailedlabel": "detailed_ground_truth_label",
+    "label": "ground_truth_logfile_label",
+    "detailedlabel": "ground_truth_logfile_detailed_label",
 }
 
 http_fields_to_slips_fields_map = {
@@ -55,8 +55,8 @@ http_fields_to_slips_fields_map = {
     "status_msg": "status_msg",
     "resp_mime_types": "resp_mime_types",
     "resp_fuids": "resp_fuids",
-    "label": "ground_truth_label",
-    "detailedlabel": "detailed_ground_truth_label",
+    "label": "ground_truth_logfile_label",
+    "detailedlabel": "ground_truth_logfile_detailed_label",
 }
 
 ssl_fields_to_slips_fields_map = {
@@ -78,8 +78,8 @@ ssl_fields_to_slips_fields_map = {
     "curve": "curve",
     "ja3": "ja3",
     "ja3s": "ja3s",
-    "label": "ground_truth_label",
-    "detailedlabel": "detailed_ground_truth_label",
+    "label": "ground_truth_logfile_label",
+    "detailedlabel": "ground_truth_logfile_detailed_label",
 }
 
 ssh_fields_to_slips_fields_map = {
@@ -97,8 +97,8 @@ ssh_fields_to_slips_fields_map = {
     "kex_alg": "kex_alg",
     "host_key_alg": "host_key_alg",
     "host_key": "host_key",
-    "label": "ground_truth_label",
-    "detailedlabel": "detailed_ground_truth_label",
+    "label": "ground_truth_logfile_label",
+    "detailedlabel": "ground_truth_logfile_detailed_label",
 }
 
 dhcp_fields_to_slips_fields_map = {
@@ -109,8 +109,8 @@ dhcp_fields_to_slips_fields_map = {
     "mac": "smac",
     "host_name": "host_name",
     "requested_addr": "requested_addr",
-    "label": "ground_truth_label",
-    "detailedlabel": "detailed_ground_truth_label",
+    "label": "ground_truth_logfile_label",
+    "detailedlabel": "ground_truth_logfile_detailed_label",
 }
 
 ftp_fields_to_slips_fields_map = {
@@ -121,8 +121,8 @@ ftp_fields_to_slips_fields_map = {
     "id.resp_h": "daddr",
     "id.resp_p": "dport",
     "data_channel.resp_p": "used_port",
-    "label": "ground_truth_label",
-    "detailedlabel": "detailed_ground_truth_label",
+    "label": "ground_truth_logfile_label",
+    "detailedlabel": "ground_truth_logfile_detailed_label",
 }
 
 smtp_fields_to_slips_fields_map = {
@@ -133,8 +133,8 @@ smtp_fields_to_slips_fields_map = {
     "id.resp_h": "daddr",
     "id.resp_p": "dport",
     "last_reply": "last_reply",
-    "label": "ground_truth_label",
-    "detailedlabel": "detailed_ground_truth_label",
+    "label": "ground_truth_logfile_label",
+    "detailedlabel": "ground_truth_logfile_detailed_label",
 }
 
 tunnel_fields_to_slips_fields_map = {
@@ -146,8 +146,8 @@ tunnel_fields_to_slips_fields_map = {
     "id.resp_p": "dport",
     "tunnel_type": "tunnel_type",
     "action": "action",
-    "label": "ground_truth_label",
-    "detailedlabel": "detailed_ground_truth_label",
+    "label": "ground_truth_logfile_label",
+    "detailedlabel": "ground_truth_logfile_detailed_label",
 }
 
 notice_fields_to_slips_fields_map = {
@@ -162,8 +162,8 @@ notice_fields_to_slips_fields_map = {
     "src": "scanning_ip",
     "dst": "dst",
     "p": "scanned_port",
-    "label": "ground_truth_label",
-    "detailedlabel": "detailed_ground_truth_label",
+    "label": "ground_truth_logfile_label",
+    "detailedlabel": "ground_truth_logfile_detailed_label",
 }
 
 files_fields_to_slips_fields_map = {
@@ -176,8 +176,8 @@ files_fields_to_slips_fields_map = {
     "md5": "md5",
     "sha1": "sha1",
     "total_bytes": "size",
-    "label": "ground_truth_label",
-    "detailedlabel": "detailed_ground_truth_label",
+    "label": "ground_truth_logfile_label",
+    "detailedlabel": "ground_truth_logfile_detailed_label",
 }
 
 arp_fields_to_slips_fields_map = {
@@ -190,8 +190,8 @@ arp_fields_to_slips_fields_map = {
     "src_mac": "smac",
     "dst_mac": "dmac",
     "operation": "operation",
-    "label": "ground_truth_label",
-    "detailedlabel": "detailed_ground_truth_label",
+    "label": "ground_truth_logfile_label",
+    "detailedlabel": "ground_truth_logfile_detailed_label",
 }
 
 software_fields_to_slips_fields_map = {
@@ -202,8 +202,8 @@ software_fields_to_slips_fields_map = {
     "version.major": "version_major",
     "version.minor": "version_minor",
     "unparsed_version": "unparsed_version",
-    "label": "ground_truth_label",
-    "detailedlabel": "detailed_ground_truth_label",
+    "label": "ground_truth_logfile_label",
+    "detailedlabel": "ground_truth_logfile_detailed_label",
 }
 
 weird_fields_to_slips_fields_map = {

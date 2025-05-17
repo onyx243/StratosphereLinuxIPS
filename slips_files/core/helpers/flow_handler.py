@@ -129,7 +129,12 @@ class FlowHandler:
         port_type = "Src"
         self.db.add_port(self.profileid, self.twid, self.flow, role, port_type)
         # store the original flow as benign in sqlite
-        self.db.add_flow(self.flow, self.profileid, self.twid, "benign")
+        self.db.add_flow(
+            self.flow,
+            self.profileid,
+            self.twid,
+            ground_truth_config_label="benign",
+        )
 
         self.db.add_mac_addr_to_profile(self.profileid, self.flow.smac)
 

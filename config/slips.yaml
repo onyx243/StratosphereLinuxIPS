@@ -105,14 +105,14 @@ parameters:
   # deletePrevdb : false
   deletePrevdb: true
 
-  # Set the label for all the flows that are being read.
+  # Set the ground truth label for all the flows that are being read.
   # For now only normal and malware directly. No option for setting labels
-  # with a filter
+  # with a filter.
   # The purpose is to be used in the training of ML models and to output
   # flows with labels for other tools.
-  # label: malicious
-  # label: unknown
-  label: normal
+  # ground_truth_config_label: malicious
+  # ground_truth_config_label: unknown
+  ground_truth_config_label: normal
   # If Zeek files are rotated or not to avoid running out of disk.
   # Zeek rotation is enabled by default when using an interface,
   # which means Slips will delete all Zeek log files after 1 day
