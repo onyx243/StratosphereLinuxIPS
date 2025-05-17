@@ -1038,7 +1038,7 @@ def test_get_user_agent_from_profile(
 
 
 @pytest.mark.parametrize(
-    "get_profile_modules_labels_return_value, " "module, label, expected_data",
+    "get_profile_modules_predictions_return_value, " "module, prediction, expected_data",
     [
         # Testcase 1: No existing module labels
         ({}, "test_module", "test_label", {"test_module": "test_label"}),
@@ -1059,22 +1059,22 @@ def test_get_user_agent_from_profile(
         ),
     ],
 )
-def test_set_profile_module_label(
-    get_profile_modules_labels_return_value, module, label, expected_data
+def test_set_profile_module_prediction(
+    get_profile_modules_predictions_return_value, module, prediction, expected_data
 ):
     handler = ModuleFactory().create_profile_handler_obj()
 
-    handler.get_modules_labels_of_a_profile = MagicMock(
-        return_value=get_profile_modules_labels_return_value
+    handler.get_modules_predictions_of_a_profile = MagicMock(
+        return_value=get_profile_modules_predictions_return_value
     )
 
     profileid = "profile_1"
 
-    handler.set_module_label_for_profile(profileid, module, label)
+    handler.set_module_prediction_for_profile(profileid, module, prediction)
 
     expected_data_str = json.dumps(expected_data)
     handler.r.hset.assert_called_once_with(
-        profileid, "modules_labels", expected_data_str
+        profileid, "modules_predictions", expected_data_str
     )
 
 
@@ -1661,15 +1661,15 @@ def test_add_existing_user_agent_to_profile():
         (None, {}),
     ],
 )
-def test_get_profile_modules_labels(hget_return_value, expected_data):
+def test_get_profile_modules_predictions(hget_return_value, expected_data):
     handler = ModuleFactory().create_profile_handler_obj()
 
     profileid = "profile_1"
 
     handler.r.hget.return_value = hget_return_value
 
-    data = handler.get_modules_labels_of_a_profile(profileid)
-    handler.r.hget.assert_called_once_with(profileid, "modules_labels")
+    data = handler.get_modules_predictions_of_a_profile(profileid)
+    handler.r.hget.assert_called_once_with(profileid, "modules_predictions")
     assert data == expected_data
 
 

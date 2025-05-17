@@ -792,15 +792,17 @@ class ProfileHandler:
         flow,
         profileid="",
         twid="",
-        label="",
+        ground_truth_config_label="",
     ):
         """
         Function to add a flow by interpreting the data. The flow is added to
         the correct TW for this profile.
         The profileid is the main profile that this flow is related too.
         """
-        if label:
-            self.r.zincrby(self.constants.LABELS, 1, label)
+        if ground_truth_config_label:
+            self.r.zincrby(
+                self.constants.LABELS, 1, ground_truth_config_label
+            )
 
         to_send = {
             "profileid": profileid,
@@ -810,8 +812,8 @@ class ProfileHandler:
             "interpreted_state": self.get_final_state_from_flags(
                 flow.state, flow.pkts
             ),
-            "label": label,
-            "module_labels": {},
+            "ground_truth_config_label": ground_truth_config_label,
+            "modules_predictions": {},
         }
         to_send = json.dumps(to_send)
 
@@ -1492,16 +1494,18 @@ class ProfileHandler:
             self.print(type(inst), 0, 1)
             self.print(inst, 0, 1)
 
-    def set_module_label_for_profile(self, profileid, module, label):
+    def set_module_prediction_for_profile(
+        self, profileid, module, prediction
+    ):
         """
-        Set a module label for a profile.
-        A module label is a label set by a module, and not
+        Set a module prediction for a profile.
+        A module prediction is a label set by a module, and not
         a groundtruth label
         """
-        data = self.get_modules_labels_of_a_profile(profileid)
-        data[module] = label
+        data = self.get_modules_predictions_of_a_profile(profileid)
+        data[module] = prediction
         data = json.dumps(data)
-        self.r.hset(profileid, "modules_labels", data)
+        self.r.hset(profileid, "modules_predictions", data)
 
     def check_tw_to_close(self, close_all=False):
         """
@@ -1699,11 +1703,9 @@ class ProfileHandler:
             )
             self.print(traceback.format_exc(), 0, 1)
 
-    def get_modules_labels_of_a_profile(self, profileid):
-        """
-        Get labels set by modules in the profile.
-        """
-        data = self.r.hget(profileid, "modules_labels")
+    def get_modules_predictions_of_a_profile(self, profileid):
+        """Get predictions set by modules in the profile."""
+        data = self.r.hget(profileid, "modules_predictions")
         data = json.loads(data) if data else {}
         return data
 

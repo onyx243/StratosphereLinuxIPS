@@ -602,8 +602,8 @@ class ConfigParser(object):
             "parameters", "store_zeek_files_in_the_output_dir", False
         )
 
-    def label(self):
-        return self.read_configuration("parameters", "label", "unknown")
+    def ground_truth_config_label(self):
+        return self.read_configuration("parameters", "ground_truth_config_label", "unknown")
 
     def get_UID(self):
         return int(self.read_configuration("Docker", "UID", 0))
